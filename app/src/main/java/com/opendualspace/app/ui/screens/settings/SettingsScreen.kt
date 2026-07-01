@@ -6,7 +6,9 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -18,6 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.opendualspace.app.ui.components.AdBannerPlaceholder
@@ -34,6 +38,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showPrivacyDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -126,7 +131,7 @@ fun SettingsScreen(
                     try {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://github.com/opendualspace/open-dualspace")
+                            Uri.parse("https://github.com/Tyagism/Open-DualSpace")
                         )
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
@@ -169,15 +174,7 @@ fun SettingsScreen(
                     title = "Privacy Policy",
                     subtitle = "How we handle your data"
                 ) {
-                    try {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://github.com/opendualspace/open-dualspace/blob/main/PRIVACY.md")
-                        )
-                        context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(context, "No browser app found", Toast.LENGTH_SHORT).show()
-                    }
+                    showPrivacyDialog = true
                 }
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -265,6 +262,175 @@ fun SettingsScreen(
                 }
             },
             shape = RoundedCornerShape(20.dp)
+        )
+    }
+
+    // Privacy Policy Dialog
+    if (showPrivacyDialog) {
+        PrivacyPolicyDialog(
+            onDismiss = { showPrivacyDialog = false },
+            onOpenUrl = { url ->
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(context, "No browser app found", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun PrivacyPolicyDialog(
+    onDismiss: () -> Unit,
+    onOpenUrl: (String) -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            GlassmorphismCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.85f),
+                cornerRadius = 24.dp,
+                enableLiquidAnimation = true
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Privacy Policy",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Close",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = "Last Updated: July 1, 2026",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "Open DualSpace is designed with privacy as a core principle. We do not collect, store, or transmit any of your personal identification information, location data, or browsing history to external servers.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        PolicySectionTitle("Information Stored Locally")
+                        PolicyBulletPoint("Your settings preferences (theme, app lock state) are stored on-device using Android DataStore.")
+                        PolicyBulletPoint("The list of package names you choose to clone is stored locally.")
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        PolicySectionTitle("Permissions & Usage")
+                        PolicyBulletPoint("QUERY_ALL_PACKAGES: To show installed apps so you can clone them.")
+                        PolicyBulletPoint("USE_BIOMETRIC: For App Lock verification.")
+                        PolicyBulletPoint("POST_NOTIFICATIONS: To display progress of app cloning.")
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        PolicySectionTitle("Third-Party Services")
+                        PolicyBulletPoint("We use Google AdMob for advertisement delivery. AdMob may collect certain device identifiers under Google's Privacy Policy.")
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        PolicySectionTitle("Work Profile Containers")
+                        PolicyBulletPoint("On supported devices, clones run inside secure isolated containers managed by the Android OS.")
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { onOpenUrl("https://github.com/Tyagism/Open-DualSpace/blob/main/PRIVACY_POLICY.md") },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Filled.Launch, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Open GitHub", style = MaterialTheme.typography.labelMedium)
+                        }
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("Done", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PolicySectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(bottom = 6.dp)
+    )
+}
+
+@Composable
+private fun PolicyBulletPoint(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text("•", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
