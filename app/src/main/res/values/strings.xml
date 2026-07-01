@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Open DualSpace</string>
+    <string name="app_description">Clone and run dual instances of your apps</string>
+
+    <!-- Setup Screen -->
+    <string name="setup_title">Welcome to Open DualSpace</string>
+    <string name="setup_subtitle">Clone any app, run dual accounts seamlessly</string>
+    <string name="setup_step1_title">Create Isolated Space</string>
+    <string name="setup_step1_desc">We create a secure Work Profile on your device to isolate cloned apps</string>
+    <string name="setup_step2_title">Clone Your Apps</string>
+    <string name="setup_step2_desc">Select any installed app and clone it with one tap</string>
+    <string name="setup_step3_title">Use Seamlessly</string>
+    <string name="setup_step3_desc">Launch cloned apps just like regular apps, with separate data and accounts</string>
+    <string name="setup_activate_btn">Activate DualSpace</string>
+    <string name="setup_activating">Setting up your dual space…</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">My Cloned Apps</string>
+    <string name="home_empty_title">No Cloned Apps Yet</string>
+    <string name="home_empty_subtitle">Tap + to clone your first app</string>
+    <string name="home_add_clone">Add Clone</string>
+    <string name="home_resource_title">Resource Usage</string>
+    <string name="home_ram_usage">RAM Usage</string>
+    <string name="home_storage_usage">Storage Usage</string>
+
+    <!-- App List Screen -->
+    <string name="applist_title">Select App to Clone</string>
+    <string name="applist_search_hint">Search apps…</string>
+    <string name="applist_clone_btn">Clone</string>
+    <string name="applist_cloned_badge">Cloned</string>
+    <string name="applist_show_system">Show System Apps</string>
+    <string name="applist_filter_all">All</string>
+    <string name="applist_filter_social">Social</string>
+    <string name="applist_filter_games">Games</string>
+    <string name="applist_filter_tools">Tools</string>
+    <string name="applist_filter_media">Media</string>
+
+    <!-- Cloned App Actions -->
+    <string name="action_launch">Launch</string>
+    <string name="action_freeze">Freeze</string>
+    <string name="action_unfreeze">Unfreeze</string>
+    <string name="action_unclone">Remove Clone</string>
+    <string name="action_shortcut">Add to Home</string>
+    <string name="action_app_info">App Info</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_dark_mode_desc">Switch between light and dark themes</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_app_lock">App Lock</string>
+    <string name="settings_app_lock_desc">Require PIN or biometric to open DualSpace</string>
+    <string name="settings_behavior">Behavior</string>
+    <string name="settings_auto_start">Auto-Start on Boot</string>
+    <string name="settings_auto_start_desc">Re-enable cloned apps when device restarts</string>
+    <string name="settings_show_system">Show System Apps</string>
+    <string name="settings_show_system_desc">Include system apps in the app list</string>
+    <string name="settings_danger">Danger Zone</string>
+    <string name="settings_destroy_profile">Remove DualSpace</string>
+    <string name="settings_destroy_desc">Delete the work profile and all cloned app data</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_github">View on GitHub</string>
+    <string name="settings_rate">Rate on Play Store</string>
+    <string name="settings_privacy">Privacy Policy</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_confirm_unclone_title">Remove Clone?</string>
+    <string name="dialog_confirm_unclone_msg">This will delete all data for the cloned app. This cannot be undone.</string>
+    <string name="dialog_confirm_destroy_title">Remove DualSpace?</string>
+    <string name="dialog_confirm_destroy_msg">This will delete the work profile and ALL cloned app data. This action is irreversible.</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_delete">Delete</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_clone">Clone Operations</string>
+    <string name="notification_cloning">Cloning %1$s…</string>
+    <string name="notification_clone_success">%1$s cloned successfully!</string>
+    <string name="notification_clone_error">Failed to clone %1$s</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Ads -->
+    <string name="ad_banner_placeholder">Advertisement</string>
+</resources>

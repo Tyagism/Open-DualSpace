@@ -1,0 +1,77 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+build/
+captures/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio generated files and folders
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (sensitive)
+google-services.json
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+.cxx/
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Log files
+*.log
+
+# Crashlytics
+crashlytics-build.properties
+crashlytics.properties
+fabric.properties
+
+# Node
+node_modules/
+
+# Environment variables
+.env
+.env.local
