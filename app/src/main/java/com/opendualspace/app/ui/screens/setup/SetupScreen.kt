@@ -194,14 +194,37 @@ fun SetupScreen(
                     Icon(Icons.Filled.ArrowForward, contentDescription = null)
                 }
             } else {
-                // "Let's Start" button — completes setup, no provisioning
+                // "Let's Start" button — triggers provisioning
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val workProfileManager = remember { com.opendualspace.app.domain.manager.WorkProfileManager(context) }
+                val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    if (result.resultCode == android.app.Activity.RESULT_OK) {
+                        isCompleting = true
+                        scope.launch {
+                            delay(300)
+                            onSetupComplete()
+                        }
+                    } else {
+                        isCompleting = false
+                        android.widget.Toast.makeText(context, "Work Profile setup cancelled", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+
                 Button(
                     onClick = {
                         if (!isCompleting) {
-                            isCompleting = true
-                            scope.launch {
-                                delay(300) // Brief animation before navigating
-                                onSetupComplete()
+                            if (workProfileManager.canProvisionWorkProfile()) {
+                                isCompleting = true
+                                launcher.launch(workProfileManager.createProvisioningIntent())
+                            } else {
+                                // Fallback if provisioning not possible
+                                isCompleting = true
+                                scope.launch {
+                                    delay(300)
+                                    onSetupComplete()
+                                }
                             }
                         }
                     },

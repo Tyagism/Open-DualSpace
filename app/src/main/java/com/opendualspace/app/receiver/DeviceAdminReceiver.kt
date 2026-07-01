@@ -42,6 +42,19 @@ class DeviceAdminReceiver : DeviceAdminReceiver() {
         val componentName = getComponentName(context)
 
         try {
+            // Add cross-profile intent filter so primary profile can send intents to the work profile
+            val filter = android.content.IntentFilter().apply {
+                addAction(com.opendualspace.app.service.WorkProfileActionActivity.ACTION_CLONE)
+                addAction(com.opendualspace.app.service.WorkProfileActionActivity.ACTION_UNCLONE)
+                addAction(com.opendualspace.app.service.WorkProfileActionActivity.ACTION_FREEZE)
+                addAction(com.opendualspace.app.service.WorkProfileActionActivity.ACTION_UNFREEZE)
+            }
+            manager.addCrossProfileIntentFilter(
+                componentName,
+                filter,
+                DevicePolicyManager.FLAG_MANAGED_CAN_ACCESS_PARENT or DevicePolicyManager.FLAG_PARENT_CAN_ACCESS_MANAGED
+            )
+
             // Enable the profile
             manager.setProfileName(componentName, "Open DualSpace")
             manager.setProfileEnabled(componentName)

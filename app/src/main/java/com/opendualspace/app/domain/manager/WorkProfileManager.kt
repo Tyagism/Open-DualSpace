@@ -89,10 +89,6 @@ class WorkProfileManager(private val context: Context) {
         }
     }
 
-    /**
-     * Clone an app. Uses Work Profile if active, otherwise saves
-     * to the local clone store for standalone mode.
-     */
     suspend fun cloneApp(packageName: String): Boolean {
         if (isWorkProfileActive()) {
             return try {
@@ -105,23 +101,42 @@ class WorkProfileManager(private val context: Context) {
                 clonedAppsStore.addClonedApp(packageName)
                 true
             }
+        } else {
+            // Try to trigger work profile action
+            try {
+                val intent = Intent("com.opendualspace.action.CLONE_APP").apply {
+                    putExtra("extra_package_name", packageName)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+                clonedAppsStore.addClonedApp(packageName)
+                Log.i(TAG, "Sent clone intent to Work Profile for: $packageName")
+                return true
+            } catch (e: Exception) {
+                // Standalone mode — just register in local store
+                clonedAppsStore.addClonedApp(packageName)
+                Log.i(TAG, "Cloned app (standalone): $packageName")
+                return true
+            }
         }
-
-        // Standalone mode — just register in local store
-        clonedAppsStore.addClonedApp(packageName)
-        Log.i(TAG, "Cloned app (standalone): $packageName")
-        return true
     }
 
-    /**
-     * Remove a cloned app.
-     */
     suspend fun uncloneApp(packageName: String): Boolean {
         if (isWorkProfileActive()) {
             try {
                 devicePolicyManager.setApplicationHidden(adminComponent, packageName, true)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to hide app in work profile: $packageName", e)
+            }
+        } else {
+            try {
+                val intent = Intent("com.opendualspace.action.UNCLONE_APP").apply {
+                    putExtra("extra_package_name", packageName)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                // ignore
             }
         }
 
@@ -130,15 +145,22 @@ class WorkProfileManager(private val context: Context) {
         return true
     }
 
-    /**
-     * Freeze a cloned app (disable it to save resources).
-     */
     suspend fun freezeApp(packageName: String): Boolean {
         if (isWorkProfileActive()) {
             try {
                 devicePolicyManager.setApplicationHidden(adminComponent, packageName, true)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to freeze app in work profile: $packageName", e)
+            }
+        } else {
+            try {
+                val intent = Intent("com.opendualspace.action.FREEZE_APP").apply {
+                    putExtra("extra_package_name", packageName)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                // ignore
             }
         }
 
@@ -147,15 +169,22 @@ class WorkProfileManager(private val context: Context) {
         return true
     }
 
-    /**
-     * Unfreeze a cloned app (enable it again).
-     */
     suspend fun unfreezeApp(packageName: String): Boolean {
         if (isWorkProfileActive()) {
             try {
                 devicePolicyManager.setApplicationHidden(adminComponent, packageName, false)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to unfreeze app in work profile: $packageName", e)
+            }
+        } else {
+            try {
+                val intent = Intent("com.opendualspace.action.UNFREEZE_APP").apply {
+                    putExtra("extra_package_name", packageName)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                // ignore
             }
         }
 
@@ -204,11 +233,22 @@ class WorkProfileManager(private val context: Context) {
         }
     }
 
-    /**
-     * Launch a cloned app.
-     */
     fun launchClonedApp(packageName: String): Boolean {
         return try {
+            val userManager = context.getSystemService(Context.USER_SERVICE) as android.os.UserManager
+            val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as android.content.pm.LauncherApps
+            val workProfileUser = userManager.userProfiles.firstOrNull { it != android.os.Process.myUserHandle() }
+            
+            if (workProfileUser != null) {
+                val intent = packageManager.getLaunchIntentForPackage(packageName)
+                if (intent != null && intent.component != null) {
+                    launcherApps.startMainActivity(intent.component, workProfileUser, null, null)
+                    Log.i(TAG, "Launched $packageName in Work Profile")
+                    return true
+                }
+            }
+
+            // Fallback
             val intent = packageManager.getLaunchIntentForPackage(packageName)
             if (intent != null) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
